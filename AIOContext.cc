@@ -107,6 +107,23 @@ std::size_t AIOContext::remainingAIOQueueDepth()
 AIOContext::Event::Event(io_event _event)
 : event( _event )
 {
+    switch( event.obj->aio_lio_opcode )
+    {
+        case IO_CMD_PREAD:
+        {
+            type = EventType::read;
+            break;
+        }
+        case IO_CMD_PWRITE:
+        {
+            type = EventType::write;
+            break;
+        }
+        default:
+        {
+            throw std::runtime_error( "given request type is not supported" );
+        }
+    }
 }
 
 AIOContext::Event::~Event()
@@ -116,4 +133,9 @@ AIOContext::Event::~Event()
 uint8_t* AIOContext::Event::getData()
 {
     return static_cast< uint8_t* >( event.data );
+}
+
+AIOContext::Event::EventType AIOContext::Event::getType()
+{
+    return type;
 }

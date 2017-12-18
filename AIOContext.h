@@ -28,13 +28,21 @@ public:
     friend AIOContext;
         
     public:
+        enum class EventType
+        {
+            read,
+            write
+        };
+        
         ~Event();
         uint8_t* getData();
+        EventType getType();
         
     private:
         Event( io_event event );
         
         io_event event;
+        EventType type;
     };
     
     
